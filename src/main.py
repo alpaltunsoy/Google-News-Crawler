@@ -1,5 +1,26 @@
 import requests
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
+import csv 
+
+
+def csv_creator_category(headers, kaynak,category, time, url):
+        csv_list = [["ID","Headline", "Source","Category", "Time", "URL"]]
+        for i in range(len(headers)):
+                csv_list.append([str(i+1),headers[i], kaynak[i],category, time[i], url[i]])
+    
+        with open(f"All_news_list_{category}.csv", mode="w", newline='', encoding='utf-8-sig') as file:
+                writer = csv.writer(file)
+                writer.writerows(csv_list)
+
+def csv_creator(headers, kaynak,category, time, url):
+        csv_list = [["ID","Headline", "Source","Category", "Time", "URL"]]
+        for i in range(len(headers)):
+                csv_list.append([str(i+1),headers[i], kaynak[i],category[i], time[i], url[i]])
+    
+        with open(f"All_news_list.csv", mode="w", newline='', encoding='utf-8-sig') as file:
+                writer = csv.writer(file)
+                writer.writerows(csv_list)
+
 
 def finding_categories(categories_dictionary):
         
@@ -34,9 +55,10 @@ def finding_categories(categories_dictionary):
 
 def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time_lists):
 
-        
+        category_counter = []
         for i  in range(len(categories_dictionary)):
                 
+        
                 url = "https://news.google.com"+ categories_dictionary[i]["Link"][1:]
 
                 try:
@@ -44,27 +66,53 @@ def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time
                 except:
                         print("There are some problem on news side and closing program ")
                         exit()
-
+                
+                
                 
                 if(webRequestNews.status_code == 200):
+                        newsHeaders_temp = []
+                        publisher_list_temp = []
+                        time_lists_temp=[]
+                        url_lists_temp=[]
+
 
                         print("Finding news on " + categories_dictionary[i]["Başlık"]) #status printing
                         newsSoup = BeautifulSoup(webRequestNews.text, "lxml") #creating soup object
                         
+
                         #finding news headers
                         all_news_raw = newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv")))
                         for headers in all_news_raw:
                                 newsHeaders.append(headers.contents[0].strip())
                                 url_lists.append("news.google.com"+headers.get("href")[1:])
+                                newsHeaders_temp.append(headers.contents[0].strip())
+                                url_lists_temp.append("news.google.com"+headers.get("href")[1:])
+                                
+                                
+                                
 
                         #finding publishers
                         all_news_raw = newsSoup.find_all("div", class_="vr1PYe")
                         for publisher in all_news_raw:
                                 publisher_list.append(publisher.contents[0].strip())
+                                publisher_list_temp.append(publisher.contents[0].strip())
                                 
+                        
+                                
+                        #publishing time
                         all_news_raw = newsSoup.find_all("time", class_="hvbAAd")
                         for times in all_news_raw:
                                 time_lists.append(times.get("datetime"))
+                                time_lists_temp.append(times.get("datetime"))
+                                category_counter.append(categories_dictionary[i]["Başlık"])
+
+                        
+
+                        csv_creator_category(newsHeaders_temp,publisher_list_temp,categories_dictionary[i]["Başlık"],time_lists_temp,url_lists_temp)
+
+        csv_creator(newsHeaders,publisher_list,category_counter,time_lists,url_lists)
+        
+
 
 def main():
     
@@ -82,8 +130,12 @@ def main():
         print("Bulunan url sayısı : ", len(url_lists))
         print("Bulunan zaman sayısı : ", len(time_lists))
 
-        with open("haberler.txt","w", encoding="utf-8") as file:
-                for x in range(len(url_lists)):
-                        file.write(str(x)+","+newsHeaders[x]+","+publisher_list[x]+","+time_lists[x]+","+url_lists[x]+"\n")
+        
+
+
+
+
+
+
 if __name__ == "__main__":
     main()
