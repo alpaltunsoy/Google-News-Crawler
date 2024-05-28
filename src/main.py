@@ -40,12 +40,12 @@ def finding_categories(categories_dictionary):
         
 
 
-def finding_news(categories_dictionary,newsHeaders):
+def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time_lists):
 
         
         #for i  in range(len(categories_dictionary)):
                 
-                url = "https://news.google.com"+ categories_dictionary[0]["Link"][1:]
+                url = "https://news.google.com"+ categories_dictionary[1]["Link"][1:]
 
                 try:
                         webRequestNews = requests.get(url) # taking websites with requests
@@ -53,17 +53,27 @@ def finding_news(categories_dictionary,newsHeaders):
                         print("There are some problem on news side and closing program ")
                         exit()
 
-                #haber başlığı çekme
-                if(webRequestNews.status_code == 200):
-                        print("Finding news on " + categories_dictionary[0]["Başlık"])
-                        newsParsing = BeautifulSoup(webRequestNews.text, "lxml") 
-                        all_news_raw = newsParsing.find_all("a", class_="gPFEn")
-                       
                 
+                if(webRequestNews.status_code == 200):
+
+                        print("Finding news on " + categories_dictionary[1]["Başlık"]) #status printing
+                        newsSoup = BeautifulSoup(webRequestNews.text, "lxml") #creating soup object
+                        
+                        #finding news headers
+                        all_news_raw = newsSoup.find_all("a", class_="gPFEn")
                         for headers in all_news_raw:
                                 newsHeaders.append(headers.contents[0].strip())
-                
-                       
+                                url_lists.append("news.google.com"+headers.get("href")[1:])
+
+                        #finding publishers
+                        all_news_raw = newsSoup.find_all("div", class_="vr1PYe")
+                        for publisher in all_news_raw:
+                                publisher_list.append(publisher.contents[0].strip())
+                                
+                        all_news_raw = newsSoup.find_all("time", class_="hvbAAd")
+                        for times in all_news_raw:
+                                time_lists.append(times.get("datetime"))
+
                 
       
 
@@ -74,10 +84,24 @@ def main():
 
         categories_dictionary = [] #defining list for main_categories of news
         newsHeaders=[]
+        url_lists = []
+        publisher_list = []
+        time_lists = []
         finding_categories(categories_dictionary) #adding categories to our list 
         print("\n")
-        finding_news(categories_dictionary, newsHeaders)
-        print(newsHeaders)
+        finding_news(categories_dictionary, newsHeaders,url_lists,publisher_list, time_lists)
+        
+        for x in range(len(url_lists)):
+                print(newsHeaders[x] +" " +publisher_list[x] +" "+ time_lists[x] +" " + url_lists[x])
+
+
+        print("Bulunan yayımcı sayısı : ",len(publisher_list))
+        print("Bulunan başlık sayısı : ",len(newsHeaders))
+        print("Bulunan url sayısı : ", len(url_lists))
+        print("Bulunan zaman sayısı : ", len(time_lists))
+        
+        
+        
         
         
 
