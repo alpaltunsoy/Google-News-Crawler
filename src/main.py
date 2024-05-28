@@ -53,7 +53,14 @@ def finding_news(categories_dictionary):
                 exit()
 
         if(webRequestNews.status_code == 200):
-                print("Finding news on " + categories_dictionary[0]["Başlık"]) 
+                print("Finding news on " + categories_dictionary[0]["Başlık"])
+                newsParsing = BeautifulSoup(webRequestNews.text, "lxml") 
+                all_news_raw = newsParsing.find_all("a", class_="gPFEn")
+                #print(all_news_raw)
+                #aTag=newsParsing.a
+                #print(aTag.contents)
+                for headers in all_news_raw:
+                        print(headers.contents[0].strip())
                 
       
 
@@ -64,15 +71,10 @@ def main():
 
         categories_dictionary = [] #defining list for main_categories of news
         finding_categories(categories_dictionary) #adding categories to our list 
-        
+        print("\n")
         finding_news(categories_dictionary)
         
 
     
-    
-
-
-
 if __name__ == "__main__":
     main()
-        
