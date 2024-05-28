@@ -12,9 +12,19 @@ print("Connection is successfull")
 #lets take every topics
 all_topics = webParsing.find_all("a", class_="brSCsc")
 
+topics_exclude = ["Sizin için",
+                  "Takip Edilenler",
+                  "Ana Sayfa",
+                  "Takip Edilenler"
+                  ]
+
 
 for topics in all_topics:
-        if (topics.get("aria-label")  != "Sizin için"   ) and (topics.get("aria-label")  != "Takip Edilenler"   ) and (topics.get("aria-label")  != "Ana Sayfa"   )  and (topics.get("aria-label")  != "Takip edilenler"   ):
-                print(topics.get("aria-label"), "\n")
-                print(topics.get("href"), "\n")
+        for exclude in topics_exclude:
+                if topics.get("aria-label") != exclude:
+                        print(topics.get("aria-label"), "\n")
+                        print(topics.get("href"), "\n")
+
+
+        
        
