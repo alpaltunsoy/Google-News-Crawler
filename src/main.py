@@ -1,10 +1,7 @@
 import requests
 from bs4 import BeautifulSoup 
 
-
-
 def finding_categories(categories_dictionary):
-        
         
                 print("Connecting to Google news...")
                 try:
@@ -35,17 +32,12 @@ def finding_categories(categories_dictionary):
                 else:
                         print("Failed to connect google news Try again!!!")
 
-        
-        
-        
-
-
 def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time_lists):
 
         
-        #for i  in range(len(categories_dictionary)):
+        for i  in range(len(categories_dictionary)):
                 
-                url = "https://news.google.com"+ categories_dictionary[1]["Link"][1:]
+                url = "https://news.google.com"+ categories_dictionary[i]["Link"][1:]
 
                 try:
                         webRequestNews = requests.get(url) # taking websites with requests
@@ -56,11 +48,11 @@ def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time
                 
                 if(webRequestNews.status_code == 200):
 
-                        print("Finding news on " + categories_dictionary[1]["Başlık"]) #status printing
+                        print("Finding news on " + categories_dictionary[i]["Başlık"]) #status printing
                         newsSoup = BeautifulSoup(webRequestNews.text, "lxml") #creating soup object
                         
                         #finding news headers
-                        all_news_raw = newsSoup.find_all("a", class_="gPFEn")
+                        all_news_raw = newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv")))
                         for headers in all_news_raw:
                                 newsHeaders.append(headers.contents[0].strip())
                                 url_lists.append("news.google.com"+headers.get("href")[1:])
@@ -74,14 +66,8 @@ def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time
                         for times in all_news_raw:
                                 time_lists.append(times.get("datetime"))
 
-                
-      
-
-
-
 def main():
     
-
         categories_dictionary = [] #defining list for main_categories of news
         newsHeaders=[]
         url_lists = []
@@ -91,20 +77,13 @@ def main():
         print("\n")
         finding_news(categories_dictionary, newsHeaders,url_lists,publisher_list, time_lists)
         
-        for x in range(len(url_lists)):
-                print(newsHeaders[x] +" " +publisher_list[x] +" "+ time_lists[x] +" " + url_lists[x])
-
-
         print("Bulunan yayımcı sayısı : ",len(publisher_list))
         print("Bulunan başlık sayısı : ",len(newsHeaders))
         print("Bulunan url sayısı : ", len(url_lists))
         print("Bulunan zaman sayısı : ", len(time_lists))
-        
-        
-        
-        
-        
 
-    
+        with open("haberler.txt","w", encoding="utf-8") as file:
+                for x in range(len(url_lists)):
+                        file.write(str(x)+","+newsHeaders[x]+","+publisher_list[x]+","+time_lists[x]+","+url_lists[x]+"\n")
 if __name__ == "__main__":
     main()
