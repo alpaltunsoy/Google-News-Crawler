@@ -1,14 +1,18 @@
 import requests
 from bs4 import BeautifulSoup
 import csv 
-
+import os
+import datetime
 
 def csv_creator_category(headers, kaynak,category, time, url):
+
+
+        
         csv_list = [["ID","Headline", "Source","Category", "Time", "URL"]]
         for i in range(len(headers)):
                 csv_list.append([str(i+1),headers[i], kaynak[i],category, time[i], url[i]])
     
-        with open(f"All_news_list_{category}.csv", mode="w", newline='', encoding='utf-8-sig') as file:
+        with open( os.path.abspath(".")+"\docs\\"+zaman +f"\\All_news_list_{category}.csv"        , mode="w", newline='', encoding='utf-8-sig') as file:
                 writer = csv.writer(file)
                 writer.writerows(csv_list)
 
@@ -114,8 +118,27 @@ def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time
         
 
 
+def create_folder():
+        
+        #creating docs folder
+        if  not (os.path.exists(os.path.abspath(".")+"\docs")):
+                os.makedirs(os.path.abspath(".\docs"))
+        else:
+                print("Folder is already created")
+
+        #creating inside of the docs folder
+        if  not (os.path.exists(os.path.abspath(".")+"\docs\\"+zaman)):
+                print("Böyle bir dosya yok : "+os.path.abspath(".")+"\docs\\"+zaman)
+                os.makedirs(os.path.abspath(".")+"\docs\\"+zaman)
+       
+#defining global variables of date, hour        
+today = datetime.datetime.now()
+zaman = str(today.day) +"-" + str(today.month) +"-"+  str(today.year) + "  "+ str(today.hour) +" "+ str(today.minute)+" " +str(today.second)
+
 def main():
-    
+
+        print(zaman)
+        create_folder()
         categories_dictionary = [] #defining list for main_categories of news
         newsHeaders=[]
         url_lists = []
@@ -124,7 +147,7 @@ def main():
         finding_categories(categories_dictionary) #adding categories to our list 
         print("\n")
         finding_news(categories_dictionary, newsHeaders,url_lists,publisher_list, time_lists)
-        
+        print(zaman)
         print("Bulunan yayımcı sayısı : ",len(publisher_list))
         print("Bulunan başlık sayısı : ",len(newsHeaders))
         print("Bulunan url sayısı : ", len(url_lists))
