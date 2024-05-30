@@ -9,8 +9,6 @@ import pandas as pd
 
 def csv_creator_category(headers, kaynak,category, time, url):
 
-
-        
         csv_list = [["ID","Headline", "Source","Category", "Time", "URL"]]
         for i in range(len(headers)):
                 csv_list.append([str(i+1),headers[i], kaynak[i],category, time[i], url[i]])
@@ -168,7 +166,6 @@ def start():
 
 
 def main():
-        
         schedule.every().hour.at(":00").do(start)
         while True:
                 schedule.run_pending()
