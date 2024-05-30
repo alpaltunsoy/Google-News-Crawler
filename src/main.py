@@ -152,8 +152,6 @@ def start():
         finding_news(categories_dictionary) #sending categories to method for searching all news 
         return
 
-
-
 def main():
         
         schedule.every().hour.at(":00").do(start)
