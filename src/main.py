@@ -26,7 +26,6 @@ def csv_creator(headers, kaynak,category, time, url):
                 writer = csv.writer(file)
                 writer.writerows(csv_list)
 
-
 def finding_categories(categories_dictionary):
         
                 print("Connecting to Google news...")
@@ -60,55 +59,46 @@ def finding_categories(categories_dictionary):
 
 def finding_news(categories_dictionary):
 
+        #defining variables 
+        newsHeaders=[] #store all news headers       
+        url_lists = [] #store all url lists
+        publisher_list = [] #store all publisher for every news
+        time_lists = [] #store all time details for every news 
+        category_counter = [] #store all categories for every news 
 
-        newsHeaders=[]             
-        url_lists = []
-        publisher_list = []
-        time_lists = []
-        category_counter = []
         for i  in range(len(categories_dictionary)):
-                
-        
-                url = "https://news.google.com"+ categories_dictionary[i]["Link"][1:]
+                url = "https://news.google.com"+ categories_dictionary[i]["Link"][1:] #make an url for news page
 
                 try:
                         webRequestNews = requests.get(url) # taking websites with requests
                 except:
                         print("There are some problem on news side and closing program ")
                         exit()
-                
-                
-                
+
                 if(webRequestNews.status_code == 200):
+                        #defining temp variables which will be deleted every loop
                         newsHeaders_temp = []
                         publisher_list_temp = []
                         time_lists_temp=[]
                         url_lists_temp=[]
 
-
                         print("Finding news on " + categories_dictionary[i]["Başlık"]) #status printing
                         newsSoup = BeautifulSoup(webRequestNews.text, "lxml") #creating soup object
                         
-
-                        #finding news headers
-                        all_news_raw = newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv")))
+                        #finding news headers and urls
+                        all_news_raw = newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv"))) #there are two options for taking headers
                         for headers in all_news_raw:
                                 newsHeaders.append(headers.contents[0].strip())
-                                url_lists.append("news.google.com"+headers.get("href")[1:])
+                                url_lists.append("news.google.com"+headers.get("href")[1:]) #taking urls too 
                                 newsHeaders_temp.append(headers.contents[0].strip())
                                 url_lists_temp.append("news.google.com"+headers.get("href")[1:])
-                                
-                                
-                                
 
                         #finding publishers
                         all_news_raw = newsSoup.find_all("div", class_="vr1PYe")
                         for publisher in all_news_raw:
                                 publisher_list.append(publisher.contents[0].strip())
                                 publisher_list_temp.append(publisher.contents[0].strip())
-                                
                         
-                                
                         #publishing time
                         all_news_raw = newsSoup.find_all("time", class_="hvbAAd")
                         for times in all_news_raw:
@@ -117,18 +107,16 @@ def finding_news(categories_dictionary):
                                 category_counter.append(categories_dictionary[i]["Başlık"])
 
                         
-                        
+                        #creating csv and change file format
                         csv_creator_category(newsHeaders_temp,publisher_list_temp,categories_dictionary[i]["Başlık"],time_lists_temp,url_lists_temp)
                         csv_to_json(categories_dictionary[i]["Başlık"])
 
         csv_creator(newsHeaders,publisher_list,category_counter,time_lists,url_lists)
         csv_to_json("")
         
-
 def csv_to_json(category):
         converter = pd.read_csv( os.path.abspath(".")+"\docs\\"+zaman +f"\\All_news_list_{category}.csv")
         converter.to_json(os.path.abspath(".")+"\docs\\"+zaman +f"\\All_news_list_{category}.json")
-
 
 def create_folder():
         
@@ -165,11 +153,13 @@ def start():
         return
 
 
+
 def main():
+        
         schedule.every().hour.at(":00").do(start)
         while True:
-                schedule.run_pending()
-                time.sleep(1)
+               schedule.run_pending()
+               time.sleep(1)
                 
         
 if __name__ == "__main__":
