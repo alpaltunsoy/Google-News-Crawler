@@ -5,6 +5,7 @@ import os
 import datetime
 import schedule
 import time
+import pandas as pd
 
 def csv_creator_category(headers, kaynak,category, time, url):
 
@@ -23,7 +24,7 @@ def csv_creator(headers, kaynak,category, time, url):
         for i in range(len(headers)):
                 csv_list.append([str(i+1),headers[i], kaynak[i],category[i], time[i], url[i]])
     
-        with open(f"All_news_list.csv", mode="w", newline='', encoding='utf-8-sig') as file:
+        with open(os.path.abspath(".")+"\docs\\"+zaman +f"\\All_news_list_.csv", mode="w", newline='', encoding='utf-8-sig') as file:
                 writer = csv.writer(file)
                 writer.writerows(csv_list)
 
@@ -59,8 +60,13 @@ def finding_categories(categories_dictionary):
                 else:
                         print("Failed to connect google news Try again!!!")
 
-def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time_lists):
+def finding_news(categories_dictionary):
 
+
+        newsHeaders=[]             
+        url_lists = []
+        publisher_list = []
+        time_lists = []
         category_counter = []
         for i  in range(len(categories_dictionary)):
                 
@@ -113,11 +119,17 @@ def finding_news(categories_dictionary,newsHeaders,url_lists,publisher_list,time
                                 category_counter.append(categories_dictionary[i]["Başlık"])
 
                         
-
+                        
                         csv_creator_category(newsHeaders_temp,publisher_list_temp,categories_dictionary[i]["Başlık"],time_lists_temp,url_lists_temp)
+                        csv_to_json(categories_dictionary[i]["Başlık"])
 
         csv_creator(newsHeaders,publisher_list,category_counter,time_lists,url_lists)
+        csv_to_json("")
         
+
+def csv_to_json(category):
+        converter = pd.read_csv( os.path.abspath(".")+"\docs\\"+zaman +f"\\All_news_list_{category}.csv")
+        converter.to_json(os.path.abspath(".")+"\docs\\"+zaman +f"\\All_news_list_{category}.json")
 
 
 def create_folder():
@@ -125,44 +137,38 @@ def create_folder():
         #creating docs folder
         if  not (os.path.exists(os.path.abspath(".")+"\docs")):
                 os.makedirs(os.path.abspath(".\docs"))
+                print("docs folder is created")
         else:
-                print("Folder is already created")
+                print("\ndocs folder is already created")
 
         #creating inside of the docs folder
         if  not (os.path.exists(os.path.abspath(".")+"\docs\\"+zaman)):
-                print("Böyle bir dosya yok : "+os.path.abspath(".")+"\docs\\"+zaman)
+                print("\nNew Folder is created as " + zaman+"\n")
                 os.makedirs(os.path.abspath(".")+"\docs\\"+zaman)
-       
-     
-
-
-
-        
+               
 def start():
+        print("\nProgram is started")
+        #defining global variables for date information to use everywhere
         global today
         today = datetime.datetime.now()
+
+        #defining zaman for using folder operations
         global zaman
         zaman = str(today.day) +"-" + str(today.month) +"-"+  str(today.year) + "  "+ str(today.hour) +" "+ str(today.minute)+" " +str(today.second)
-        print(zaman)
+        
+        #creating folders for storing datas
         create_folder()
-        categories_dictionary = [] #defining list for main_categories of news
-        newsHeaders=[]
-        url_lists = []
-        publisher_list = []
-        time_lists = []
-        finding_categories(categories_dictionary) #adding categories to our list 
-        print("\n")
-        finding_news(categories_dictionary, newsHeaders,url_lists,publisher_list, time_lists)
-        print(zaman)
-        print("Bulunan yayımcı sayısı : ",len(publisher_list))
-        print("Bulunan başlık sayısı : ",len(newsHeaders))
-        print("Bulunan url sayısı : ", len(url_lists))
-        print("Bulunan zaman sayısı : ", len(time_lists))
+
+        #creating variables for methods 
+        categories_dictionary = [] #defining list for all categories in google news 
+        
+        finding_categories(categories_dictionary) #adding all categories in google news to list variable
+        finding_news(categories_dictionary) #sending categories to method for searching all news 
         return
 
 
 def main():
-        print("Program Başlatıldı")
+        
         schedule.every().hour.at(":00").do(start)
         while True:
                 schedule.run_pending()
