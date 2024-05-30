@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import csv 
 import os
 import datetime
+import schedule
+import time
 
 def csv_creator_category(headers, kaynak,category, time, url):
 
@@ -131,12 +133,16 @@ def create_folder():
                 print("Böyle bir dosya yok : "+os.path.abspath(".")+"\docs\\"+zaman)
                 os.makedirs(os.path.abspath(".")+"\docs\\"+zaman)
        
-#defining global variables of date, hour        
-today = datetime.datetime.now()
-zaman = str(today.day) +"-" + str(today.month) +"-"+  str(today.year) + "  "+ str(today.hour) +" "+ str(today.minute)+" " +str(today.second)
+     
 
-def main():
 
+
+        
+def start():
+        global today
+        today = datetime.datetime.now()
+        global zaman
+        zaman = str(today.day) +"-" + str(today.month) +"-"+  str(today.year) + "  "+ str(today.hour) +" "+ str(today.minute)+" " +str(today.second)
         print(zaman)
         create_folder()
         categories_dictionary = [] #defining list for main_categories of news
@@ -152,13 +158,16 @@ def main():
         print("Bulunan başlık sayısı : ",len(newsHeaders))
         print("Bulunan url sayısı : ", len(url_lists))
         print("Bulunan zaman sayısı : ", len(time_lists))
+        return
 
+
+def main():
+        print("Program Başlatıldı")
+        schedule.every().hour.at(":00").do(start)
+        while True:
+                schedule.run_pending()
+                time.sleep(1)
+                
         
-
-
-
-
-
-
 if __name__ == "__main__":
     main()
