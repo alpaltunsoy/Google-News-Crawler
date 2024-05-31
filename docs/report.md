@@ -85,3 +85,10 @@ Evet artık sunucunun 200 kodunu döndürdüğünü varsayabiliriz. Artık metho
 
 
 ### `finding_news()` 
+Bu methodta bir **for** döngüsü ile tüm kategorilerdeki haberler csv dosyasına kaydedilir ve oluşturulan csv dosyası json formatına dönüştürülür. Her bir kategorinin url'si belli bir formattadır ve bulununan kategoriler mevcutta olan url ile birleştirilir. Birleştirme yapıldıktan sonra tekrar request atılır ve bunun sonucunda yukarıda bahsedilen sunucudan gelen yanıt ve request'in başarısı kontrol edilir. Bu kontroller sonucunda bir sorun yoksa kategoriye göre haber bulma işlemi başlar.
+
+Haberleri bulurken **Başlık**, **Kaçıncı sırada olduğu**, **Habere ait bağlantı**, **Kategorisi**, **Yayımcısı** kayıt altına alınır. Her bir kategorideki haberleri bulduktan sonra bunlar bir csv dosyası haline getirilir. Csv dosyasını oluşturmak için `csv_creator_category()` methodu kullanılır adından da belli olacağı şekilde bu sadece kategorileri ayrı ayrı csv dosyası yapmaya yarar. Csv yapıldıktan sonra
+`csv_to_json()` metodu ile oluşturulmuş csv dosyası json'a dönüştürülür. For döngüsü bittikten sonra ise tüm haberleri depoladığımız değişkenimiz  `csv_creator()` metodu tüm haberleri kategorisiz bir şekilde hepsini tek bir csv'ye yazar ve ardından `csv_to_json()` methodu ile tekrar jsona dönüştürülür.
+
+
+ 
