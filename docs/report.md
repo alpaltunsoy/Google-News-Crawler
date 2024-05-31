@@ -42,18 +42,18 @@ Tarayıcımızdan bir internet sitesine gitmek istediğimiz de aslında bir get 
 
 **url:** Sayfanın linkini temsil etmektedir.<br>**params:** Get fonksiyonu için tuple şeklinde veri alır bazı sitelerin özel parametreleri için bu kısmı kullanırız.
 
-#### status code
+#### `status_code`
 `X.status_code` HTTP isteği yapıldığında karşıdan sunucudan dönen bir durum kodunu ifade eder. En çok aşina olduğunuz *404* kodu dönerse eğer internet sitesi bulunamamıştır. *200* kodu ise başarılı istek anlamına gelir.
 
 #### BeautifulSoup 
 `Y = BeautifulSoup(HTML_FILE, parser_type)` BeautifulSoup ile HTML dosyalarını ayrıştırabiliriz ve bu ayrıştırdığımız verileri manipüle edebiliriz. *HTML_FILE* yazan kısım HTML dosyasınını talep eder biz buraya request ile aldığımız X değişkenini koyabiliriz. *parser_type* kısmına ise çözümleme yöntemlerinden birisini yerleştirmemiz gerekmektedir. Ben Google News Crawler'ı yazarken **lxml** tipini kullandım. Her bir parser tipinin dezavantajları ve avantajları bulunmaktadır. 
 
-#### find_all()
+#### `find_all()`
 `etiketler = Y.find_all("a" class_="XXXXX" )` Bu metodun birden fazla kullanım yöntemi olduğundan dolayı burada sadece Google News Crawler'da kullandığım şekilde kullanımından bahsedeceğim. Bu bahsedişten sonra genel hatlarıyla kullanımını anlamış olacaksınız. Daha fazla bilgi için [Dökümanlarını](https://beautiful-soup-4.readthedocs.io/en/latest/#making-the-soup) inceleyebilirsiniz.
 
 find_all methodu ile `XXXXX` sınıfına dahil tüm `<a>` etiketlerini bulur. Buradaki `class_` ve `<a>` kısımları html içerisinde aramak istediğiniz özelliğe etikete göre değiştirebilirsiniz.
 
-#### get() ve .contents[].strip() methodları
+#### `get()` ve `.contents[].strip()` methodları
 `etiketler.get("href")` get() fonksiyonu ile bulmuş olduğum özelliklerdeki HTML parçalarının, istediğimiz etiket değerlerini direkt çekebiliriz. Buradaki **href** sadece bir örnek olup istediğmiiz etiketi yazabiliriz. 
 *HTML kodunda eğer `<a href = "xxx">` gibi bi özellik varsa bize get fonksiyonu xxx' döndürecektir.
 
@@ -61,3 +61,27 @@ find_all methodu ile `XXXXX` sınıfına dahil tüm `<a>` etiketlerini bulur. Bu
 
 
 Google News Crawler'da kullandığım bazı Web Kazıma Fonksiyonları hakkında bilgi vermiş olduğumu düşünmekteyim. Daha fazla bilgi için kütüphanelerin dökümanlarını inceleyebilirsiniz.
+
+## Kodun Genel Çalışma Mantığı ve Tanımlanan methodlar
+
+Bu kısımda Google News Crawler'ı yazarken oluşturmuş olduğum bazı methodlardan ve çalışırken ne yaptıklarından bahsedeceğim. Bu kısımda methodların detaylı açıklamasını değil sadece neyin ne zaman ve nasıl çalıştığına dair basit açıklamalar yer alacak.
+
+### `main()`
+Script'i çalıştırdığımızda ilk olarak `main()` çalışır. Main içerisinde sadece saat başı kodumuzu tetikletecek kodlar ve scripin açık olduğuna dair uyarı bilgisi yer almaktadır. Her saat başı bu kod bloğu `start()` methodunu tetikler.
+
+### `start()`
+`start()` methodu diğer methodları sırasıyla çağırmak için kullandığımız methodtur. Bu method içerisinde akışa uygun bir şekilde diğer kodlar çağırılmaktadır. Bu methodlar arasında haberlerimizin kaydedildiği dosyaların oluşturulduğu method, Google News sitesinde yer alan kategorileri bulan method ve kategorileri bulduktan sonra haberleri bulan method yer almaktadır. Bu methodların adı sırasıyla 
+`create_folder()`, `finding_categories()` ve `finding_news()` methodlarıdır.
+Methodların yanı sıra burada tarih saat bilgisini barındıran, kategorileri depolayan değişkenlerin tanımlaması da burada yapılmaktadır.
+### `create_folder()`
+Bu method sayesinde çalışma dizininde *docs* adlı bir dosyanın olup olmadığının kontrolü gerçekleştirilir ve eğer yoksa çalışma dizinine ekler. Bu dosyanın kontrolünü yaptıktan sonra ise mevcut tarih saate göre yeni klasörlerin *docs* içerisine eklenmesi gerçekleştirilir. Tüm işlemler bittikten sonra Google News'ten kategorileri bulmak için yazmış olduğum `finding_categories()` methodu çalışır.
+
+### `finding_categories()` 
+Sıra bu methoda geldiğinde Google News'e request atılır ve HTML dosyasını bir değişkene kaydederiz. Eğer url bozuksa uygulama *except* bloğuna girer ve `exit()` modülü ile direkt scripti kapatır. 
+
+Eğer bağlantı başarılı olursa yukarıda bahsedilen `status_code` kontrol edilir. Eğer sunucudan alınan yanıt 200 değilse uyarı mesajı gelir ve `finding_news()` methoduna geçer burada'da kategori bulunamadığından dolayı request başarısız olur ve program `exit()` methoduna gider. 
+
+Evet artık sunucunun 200 kodunu döndürdüğünü varsayabiliriz. Artık methodumuz BeautifulSoup objesi oluşturur ve elimizdeki HTML kodunu ayrıştırmaya başlar. Bu kod bloğunun içerisinde bulunan *categories_exclude* değişkenin içerisinde bulunan içerikler istemediğimiz kategoriler veya kısımlardır. Burası varsayılan olarak **Sizin için**, **Ana Sayfa** vs gibi içerikleri bulundurur. Bunun sebebi HTML'i ayrıştırdığımızda kategori kısmında bu tarz istemediğimiz içerikler bulundurmasıdır. Başarılı bir şekilde kategorileri bulduktan sonra artık `finding_news()` methoduna sıra gelir.
+
+
+### `finding_news()` 

@@ -133,7 +133,7 @@ def create_folder():
                 os.makedirs(os.path.abspath(".")+"\docs\\"+zaman)
                
 def start():
-        print("\nProgram is started")
+        print("\nScraping is started")
         #defining global variables for date information to use everywhere
         global today
         today = datetime.datetime.now()
@@ -153,7 +153,7 @@ def start():
         return
 
 def main():
-        
+        print("Program is started \n")
         schedule.every().hour.at(":00").do(start)
         while True:
                schedule.run_pending()
