@@ -43,7 +43,7 @@ Tarayıcımızdan bir internet sitesine gitmek istediğimiz de aslında bir get 
 **url:** Sayfanın linkini temsil etmektedir.<br>**params:** Get fonksiyonu için tuple şeklinde veri alır bazı sitelerin özel parametreleri için bu kısmı kullanırız.
 
 #### status code
-`X.status_code` HTTP isteği yapıldığında karşıdan sunucudan dönen bir durum kodunu ifade eder. En çok aşina olduğunuz *404* kodu gelirse eğer internet sitesi bulunamamıştır. *200* kodu ise başarılı istek anlamına gelir.
+`X.status_code` HTTP isteği yapıldığında karşıdan sunucudan dönen bir durum kodunu ifade eder. En çok aşina olduğunuz *404* kodu dönerse eğer internet sitesi bulunamamıştır. *200* kodu ise başarılı istek anlamına gelir.
 
 #### BeautifulSoup 
 `Y = BeautifulSoup(HTML_FILE, parser_type)` BeautifulSoup ile HTML dosyalarını ayrıştırabiliriz ve bu ayrıştırdığımız verileri manipüle edebiliriz. *HTML_FILE* yazan kısım HTML dosyasınını talep eder biz buraya request ile aldığımız X değişkenini koyabiliriz. *parser_type* kısmına ise çözümleme yöntemlerinden birisini yerleştirmemiz gerekmektedir. Ben Google News Crawler'ı yazarken **lxml** tipini kullandım. Her bir parser tipinin dezavantajları ve avantajları bulunmaktadır. 
