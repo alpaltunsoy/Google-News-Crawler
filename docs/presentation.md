@@ -44,3 +44,20 @@ Tarayıcımızdan bir internet sitesine gitmek istediğimiz de aslında bir get 
 
 #### status code
 `X.status_code` HTTP isteği yapıldığında karşıdan sunucudan dönen bir durum kodunu ifade eder. En çok aşina olduğunuz *404* kodu gelirse eğer internet sitesi bulunamamıştır. *200* kodu ise başarılı istek anlamına gelir.
+
+#### BeautifulSoup 
+`Y = BeautifulSoup(HTML_FILE, parser_type)` BeautifulSoup ile HTML dosyalarını ayrıştırabiliriz ve bu ayrıştırdığımız verileri manipüle edebiliriz. *HTML_FILE* yazan kısım HTML dosyasınını talep eder biz buraya request ile aldığımız X değişkenini koyabiliriz. *parser_type* kısmına ise çözümleme yöntemlerinden birisini yerleştirmemiz gerekmektedir. Ben Google News Crawler'ı yazarken **lxml** tipini kullandım. Her bir parser tipinin dezavantajları ve avantajları bulunmaktadır. 
+
+#### find_all()
+`etiketler = Y.find_all("a" class_="XXXXX" )` Bu metodun birden fazla kullanım yöntemi olduğundan dolayı burada sadece Google News Crawler'da kullandığımız şekilde kullanımından bahsedeceğiz. Bu bahsedişten sonra genel hatlarıyla kullanımını anlamış olacaksınız. Daha fazla bilgi için [Dökümanlarını](https://beautiful-soup-4.readthedocs.io/en/latest/#making-the-soup) inceleyebilirsiniz.
+
+find_all methodu ile `XXXXX` sınıfına ait tüm `<a>` etiketlerini bulur. Buradaki `class_` ve `<a>` kısımları html içerisinde aramak istediğiniz özelliğe etikete göre değiştirebilirsiniz.
+
+#### get() ve .contents[].strip() methodları
+`etiketler.get("href")` get() fonksiyonu ile bulmuş olduğumuz özelliklerdeki HTML parçalarının, istediğimiz etiket değerlerini direkt çekebiliriz. Buradaki **href** sadece bir örnek olup istediğmiiz etiketi yazabiliriz. 
+*HTML kodunda eğer `<a href = "xxx">` gibi bi özellik varsa bize get fonksiyonu xxx' döndürecektir.
+
+`etiketler.contents[].strip()` Etiketlerin *children* sınıflarına ulaşmak için kullanılır ve strip methodu ile tüm boşluklar kaldırılır.
+
+
+Google News Crawler'da kullandığım bazı Web Kazıma Fonksiyonları hakkında bilgi vermiş olduğumu düşünmekteyim. Daha fazla bilgi için kütüphanelerin dökümanlarını inceleyebilirsiniz.
