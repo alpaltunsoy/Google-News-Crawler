@@ -88,16 +88,18 @@ def finding_news(categories_dictionary):
                         #finding news headers and urls
                         all_news_raw = newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv"))) #there are two options for taking headers
                         for headers in all_news_raw:
-                                newsHeaders.append(headers.contents[0].strip())
-                                url_lists.append("news.google.com"+headers.get("href")[1:]) #taking urls too 
-                                newsHeaders_temp.append(headers.contents[0].strip())
-                                url_lists_temp.append("news.google.com"+headers.get("href")[1:])
+                                if headers.contents: #bu sabah hata aldım out of context hatası mecbur bu checki eklemek zorunda kaldım
+                                        newsHeaders.append(headers.contents[0].strip())
+                                        newsHeaders_temp.append(headers.contents[0].strip())
+                                        url_lists.append("news.google.com"+headers.get("href")[1:]) #taking urls too 
+                                        url_lists_temp.append("news.google.com"+headers.get("href")[1:])
 
                         #finding publishers
                         all_news_raw = newsSoup.find_all("div", class_="vr1PYe")
                         for publisher in all_news_raw:
-                                publisher_list.append(publisher.contents[0].strip())
-                                publisher_list_temp.append(publisher.contents[0].strip())
+                                if publisher.contents:
+                                        publisher_list.append(publisher.contents[0].strip())
+                                        publisher_list_temp.append(publisher.contents[0].strip())
                         
                         #publishing time
                         all_news_raw = newsSoup.find_all("time", class_="hvbAAd")
