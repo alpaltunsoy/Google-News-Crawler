@@ -108,8 +108,9 @@ Google News Sitesinde haberler bazen dörtlü bazen de tekli bulunmakta. Bundan 
 
 
 Bu sorununun çözümü oldukça basit çünkü Google News bu haberlerin dizilimini değiştirdiği zaman HTML etiketlerini de değiştiriyor. Fakat benim tek kontrol mekanizmam olduğu için sadece dörtlü haberleri almıştım. Bu sorunu çözebilmek için tek kontrol mekanizması ile iki tane HTML sınıfını kontrol etmem gerekiyordu. Ya o ya bu tarzı ve bunu `lambda` ile çözdüm. Kod bloğu aşağıdadır.
-
-`newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv")))` 
+ ```bash
+newsSoup.find_all("a", class_=lambda x: x and (x.startswith("gPFEn") or x.startswith("JtKRv")))
+ ```
 
 Lambda'ları anonim bir fonksiyon olarak düşünebiliriz. Bir fonksiyon içerisinde kullanmak için uygundur. Burada birden fazla argümanı kontrol ediyoruz. Sorunuz şu olacaktır neden **x and** kulanılmıştır olabilir. Eğer boş ise *false* döndürmektedir. Bu sorunun Çözümü için [StackOverFlow](https://stackoverflow.com/questions/44872063/beautiful-soup-find-all-encompassing-multiple-class-names)'a başvurdum.
 
