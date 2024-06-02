@@ -152,6 +152,7 @@ def start():
         
         finding_categories(categories_dictionary) #adding all categories in google news to list variable
         finding_news(categories_dictionary) #sending categories to method for searching all news 
+        print("Scraping Successfully, Waiting...")
         return
 
 def main():
